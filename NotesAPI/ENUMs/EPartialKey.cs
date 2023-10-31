@@ -5,7 +5,10 @@ namespace NotesAPI.ENUMs
 {
     public enum EPartialKey
     {
-        [Display(Name = "ITEM-")]
-        ITEM
+        [Display(Name = "NOTE-")]
+        NOTE,
+        
+        [Display(Name = "NOTES")]
+        NOTES
     }
 }

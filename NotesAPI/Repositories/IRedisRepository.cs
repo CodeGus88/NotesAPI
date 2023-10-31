@@ -8,6 +8,6 @@
         bool ExistsKey(string key);
         T FindByKey<T>(string key);
         List<string> GetKeys(string partialKey);
-        public List<T> GetAll<T>(string partialKey);
+        List<T> GetAll<T>(string partialKey);
     }
 }

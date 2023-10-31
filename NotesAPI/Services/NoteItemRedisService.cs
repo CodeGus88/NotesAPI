@@ -8,56 +8,60 @@ namespace NotesAPI.Services
     public class NoteItemRedisService: NoteService
     {
         
-        private readonly RedisRepository redisRep;
+        private readonly IRedisRepository redisRepository;
 
-        public NoteItemRedisService(INoteRepository noteRep, RedisRepository redisRep): base(noteRep)
+        public NoteItemRedisService(INoteRepository noteRepository, IRedisRepository redisRepository): base(noteRepository)
         {
-            this.redisRep = redisRep;
+            this.redisRepository = redisRepository;
         }
 
-        public override async Task<Note> Add(NoteRequest request)
+        public async Task<Note> Add(NoteRequest request)
         {
             Note note = await base.Add(request);
-            redisRep.Add(
-                $"{EPartialKey.ITEM.GetDisplayName()}{note.Id}", 
+            redisRepository.Add(
+                $"{EPartialKey.NOTE.GetDisplayName()}{note.Id}", 
                 note
             );
             return note;
         }
 
-        public override async Task Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             await base.Delete(id);
-            redisRep.Delete($"{EPartialKey.ITEM.GetDisplayName()}{id}");
+            redisRepository.Delete($"{EPartialKey.NOTE.GetDisplayName()}{id}");
         }
 
-        public override async Task<Note> Edit(Guid id, NoteRequest request)
+        public void ClearCache()
+        {
+            redisRepository.DeleteAll();
+        }
+
+        public async Task<Note> Edit(Guid id, NoteRequest request)
         {
             Note note = await base.Edit(id, request);
             if(note != null)
-            redisRep.Add($"{EPartialKey.ITEM.GetDisplayName()}{id}", note);
+            redisRepository.Add($"{EPartialKey.NOTE.GetDisplayName()}{id}", note);
             return note;
         }
 
-        public override async Task<Note> FindById(Guid id)
+        public async Task<Note> FindById(Guid id)
         {
-            Note note = redisRep.FindByKey<Note>($"{EPartialKey.ITEM.GetDisplayName()}{id}");
+            Note note = redisRepository.FindByKey<Note>($"{EPartialKey.NOTE.GetDisplayName()}{id}");
             if (note == null) {
-                note = await repository.FindById(id);
-                redisRep.Add($"{EPartialKey.ITEM.GetDisplayName()}{id}", note);
+                note = await dapperRepository.FindById(id);
+                redisRepository.Add($"{EPartialKey.NOTE.GetDisplayName()}{id}", note);
             } 
             return note;
         }
 
-        public override async Task<List<Note>> GetAll()
+        public async Task<List<Note>> GetAll()
         {
-            List<Note> notes = redisRep.
-            return await repository.GetAll();
-        }
-
-        public override async Task<bool> existsById(Guid id)
-        {
-            return await repository.existsById(id);
+            List<Note> notes = redisRepository.GetAll<Note>($"{EPartialKey.NOTE.GetDisplayName()}*");
+            if (notes.Count() == 0) {
+                notes = await dapperRepository.GetAll();
+                notes.ForEach(i => redisRepository.Add($"{EPartialKey.NOTE.GetDisplayName()}{i.Id}", i));
+            }
+            return notes;
         }
     }
 }

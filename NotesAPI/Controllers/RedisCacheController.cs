@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NotesAPI.Repositories;
+using NotesAPI.Services;
 
 namespace NotesAPI.Controllers
 {
@@ -7,32 +7,33 @@ namespace NotesAPI.Controllers
     [Route("api/redis")]
     public class RedisCacheController: ControllerBase
     {
-        private readonly RedisRepository redisRepository;
+        private readonly NoteItemRedisService redisService;
 
-        public RedisCacheController(RedisRepository redisRepository)
+        public RedisCacheController(NoteItemRedisService redisService)
         {
-            this.redisRepository = redisRepository;
+            this.redisService = redisService;
         }
 
-        [HttpGet("{partialKey}")]
-        public List<string> Get(string partialKey = "*") { 
-            return redisRepository.GetKeys(partialKey);
-        }
+        //[HttpGet("{partialKey}")]
+        //public List<string> Get(string partialKey = "*") { 
+        //    return redisService.GetKeys(partialKey);
+        //}
 
-        [HttpPost()]
-        public void Post([FromQuery] string key, [FromQuery] string value)
-        {
-            redisRepository.Add(key, value);
-        }
+        //[HttpPost]
+        //public void Post([FromQuery] Guid id, [FromBody] NoteRequest request)
+        //{
+        //    redisService.Add(key, value);
+        //}
 
-        [HttpDelete("{key}")]
-        public void Delete(string key) {
-            redisRepository.Delete(key);
-        }
+        //[HttpDelete("{key}")]
+        //public void Delete(Guid key) {
+        //    redisService.Delete(key);
+        //}
 
-        [HttpDelete]
-        public void Delete() {
-            redisRepository.DeleteAll();
+        [HttpDelete("clear")]
+        public ActionResult ClearCache() {
+            redisService.ClearCache();
+            return NoContent();
         }
     }
 }

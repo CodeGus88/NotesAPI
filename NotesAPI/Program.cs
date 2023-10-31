@@ -19,6 +19,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 // My Services
 builder.Services.AddScoped<DbContext>();
 builder.Services.AddTransient<IRedisRepository, RedisRepository>();
+builder.Services.AddTransient<NoteItemRedisService>();
 builder.Services.AddTransient<INoteRepository, NoteRepository>();
 builder.Services.AddTransient<INoteService, NoteService>();
 

@@ -5,41 +5,41 @@ namespace NotesAPI.Services
 {
     public class NoteService : INoteService
     {
-        protected readonly INoteRepository repository;
+        protected readonly INoteRepository dapperRepository;
 
         public NoteService(INoteRepository repository)
         {
-            this.repository = repository;
+            this.dapperRepository = repository;
         }
-        public virtual async Task<Note> Add(NoteRequest request)
+        public async Task<Note> Add(NoteRequest request)
         {
-            Guid id = await repository.Add(request);
-            return await repository.FindById(id);
-        }
-
-        public virtual async Task Delete(Guid id)
-        {
-            await repository.Delete(id);
+            Guid id = await dapperRepository.Add(request);
+            return await dapperRepository.FindById(id);
         }
 
-        public virtual async Task<Note> Edit(Guid id, NoteRequest request)
+        public async Task Delete(Guid id)
         {
-            await repository.Edit(id, request);
-            return await repository.FindById(id);
+            await dapperRepository.Delete(id);
         }
 
-        public virtual async Task<Note> FindById(Guid id)
+        public async Task<Note> Edit(Guid id, NoteRequest request)
         {
-            return await repository.FindById(id);
+            await dapperRepository.Edit(id, request);
+            return await dapperRepository.FindById(id);
+        }
+
+        public async Task<Note> FindById(Guid id)
+        {
+            return await dapperRepository.FindById(id);
         }
 
         public async Task<List<Note>> GetAll()
         {
-            return await repository.GetAll();
+            return await dapperRepository.GetAll();
         }
 
-        public virtual async Task<bool> existsById(Guid id) {
-            return await repository.existsById(id);
+        public async Task<bool> existsById(Guid id) {
+            return await dapperRepository.existsById(id);
         }
     }
 }
