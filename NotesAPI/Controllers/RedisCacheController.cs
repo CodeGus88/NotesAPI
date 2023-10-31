@@ -7,9 +7,9 @@ namespace NotesAPI.Controllers
     [Route("api/redis")]
     public class RedisCacheController: ControllerBase
     {
-        private readonly NoteItemRedisService redisService;
+        private readonly NoteCacheService redisService;
 
-        public RedisCacheController(NoteItemRedisService redisService)
+        public RedisCacheController(NoteCacheService redisService)
         {
             this.redisService = redisService;
         }

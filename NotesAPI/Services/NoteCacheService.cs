@@ -1,25 +1,32 @@
-﻿using Microsoft.OpenApi.Extensions;
+﻿using AutoMapper;
+using Microsoft.OpenApi.Extensions;
 using NotesAPI.DTOs;
+using NotesAPI.Entities;
 using NotesAPI.ENUMs;
 using NotesAPI.Repositories;
 
 namespace NotesAPI.Services
 {
-    public class NoteItemRedisService: NoteService
+    public class NoteCacheService: INoteCacheService
     {
-        
+        private readonly INoteRepository noteRepository;
+        private readonly IMapper mapper;
         private readonly IRedisRepository redisRepository;
 
-        public NoteItemRedisService(INoteRepository noteRepository, IRedisRepository redisRepository): base(noteRepository)
+        public NoteCacheService(INoteRepository noteRepository, IRedisRepository redisRepository, IMapper mapper)
         {
+            this.noteRepository = noteRepository;
+            this.mapper = mapper;
             this.redisRepository = redisRepository;
         }
 
         public async Task<Note> Add(NoteRequest request)
         {
-            Note note = await base.Add(request);
+            Note note = mapper.Map<Note>(request);
+            note.Id = Guid.NewGuid();
+            await noteRepository.Add(note);
             redisRepository.Add(
-                $"{EPartialKey.NOTE.GetDisplayName()}{note.Id}", 
+                $"{EPartialKey.NOTE.GetDisplayName()}{note.Id}",
                 note
             );
             return note;
@@ -27,7 +34,7 @@ namespace NotesAPI.Services
 
         public async Task Delete(Guid id)
         {
-            await base.Delete(id);
+            await noteRepository.Delete(id);
             redisRepository.Delete($"{EPartialKey.NOTE.GetDisplayName()}{id}");
         }
 
@@ -36,19 +43,19 @@ namespace NotesAPI.Services
             redisRepository.DeleteAll();
         }
 
-        public async Task<Note> Edit(Guid id, NoteRequest request)
+        public async Task Edit(Guid id, NoteRequest request)
         {
-            Note note = await base.Edit(id, request);
-            if(note != null)
+            Note note = mapper.Map<Note>(request);
+            note.Id = id;
+            await noteRepository.Edit(note);
             redisRepository.Add($"{EPartialKey.NOTE.GetDisplayName()}{id}", note);
-            return note;
         }
 
         public async Task<Note> FindById(Guid id)
         {
             Note note = redisRepository.FindByKey<Note>($"{EPartialKey.NOTE.GetDisplayName()}{id}");
             if (note == null) {
-                note = await dapperRepository.FindById(id);
+                note = await noteRepository.FindById(id);
                 redisRepository.Add($"{EPartialKey.NOTE.GetDisplayName()}{id}", note);
             } 
             return note;
@@ -58,10 +65,20 @@ namespace NotesAPI.Services
         {
             List<Note> notes = redisRepository.GetAll<Note>($"{EPartialKey.NOTE.GetDisplayName()}*");
             if (notes.Count() == 0) {
-                notes = await dapperRepository.GetAll();
+                notes = await noteRepository.GetAll();
                 notes.ForEach(i => redisRepository.Add($"{EPartialKey.NOTE.GetDisplayName()}{i.Id}", i));
             }
             return notes;
+        }
+
+        public async Task<bool> existsById(Guid id)
+        {
+            return await noteRepository.existsById(id);
+        }
+
+        public bool ExistsKeyInCache(string key)
+        {
+            return redisRepository.ExistsKey(key);
         }
     }
 }

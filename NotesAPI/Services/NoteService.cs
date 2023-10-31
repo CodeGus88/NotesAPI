@@ -1,4 +1,6 @@
-﻿using NotesAPI.DTOs;
+﻿using AutoMapper;
+using NotesAPI.DTOs;
+using NotesAPI.Entities;
 using NotesAPI.Repositories;
 
 namespace NotesAPI.Services
@@ -6,15 +8,19 @@ namespace NotesAPI.Services
     public class NoteService : INoteService
     {
         protected readonly INoteRepository dapperRepository;
+        private readonly IMapper mapper;
 
-        public NoteService(INoteRepository repository)
+        public NoteService(INoteRepository repository, IMapper mapper)
         {
             this.dapperRepository = repository;
+            this.mapper = mapper;
         }
         public async Task<Note> Add(NoteRequest request)
         {
-            Guid id = await dapperRepository.Add(request);
-            return await dapperRepository.FindById(id);
+            Note note = mapper.Map<Note>(request);
+            note.Id = Guid.NewGuid();
+            await dapperRepository.Add(note);
+            return note;
         }
 
         public async Task Delete(Guid id)
@@ -22,10 +28,11 @@ namespace NotesAPI.Services
             await dapperRepository.Delete(id);
         }
 
-        public async Task<Note> Edit(Guid id, NoteRequest request)
+        public async Task Edit(Guid id, NoteRequest request)
         {
-            await dapperRepository.Edit(id, request);
-            return await dapperRepository.FindById(id);
+            Note note = mapper.Map<Note>(request);
+            note.Id = id;
+            await dapperRepository.Edit(note);
         }
 
         public async Task<Note> FindById(Guid id)
