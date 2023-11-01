@@ -7,28 +7,17 @@ namespace NotesAPI.Controllers
     [Route("api/redis")]
     public class RedisCacheController: ControllerBase
     {
-        private readonly NoteCacheService redisService;
+        private readonly INoteCacheService redisService;
 
-        public RedisCacheController(NoteCacheService redisService)
+        public RedisCacheController(INoteCacheService redisService)
         {
             this.redisService = redisService;
         }
 
-        //[HttpGet("{partialKey}")]
-        //public List<string> Get(string partialKey = "*") { 
-        //    return redisService.GetKeys(partialKey);
-        //}
-
-        //[HttpPost]
-        //public void Post([FromQuery] Guid id, [FromBody] NoteRequest request)
-        //{
-        //    redisService.Add(key, value);
-        //}
-
-        //[HttpDelete("{key}")]
-        //public void Delete(Guid key) {
-        //    redisService.Delete(key);
-        //}
+        [HttpGet("{partialKey}")]
+        public ActionResult<List<string>> GetKeys(string partialKey = "*") {
+            return redisService.GetKeys(partialKey);
+        }
 
         [HttpDelete("clear")]
         public ActionResult ClearCache() {

@@ -14,6 +14,7 @@ namespace NotesAPI.Services
         {
             this.dapperRepository = repository;
             this.mapper = mapper;
+            Console.WriteLine("Ejecutar NoteService....");
         }
         public async Task<Note> Add(NoteRequest request)
         {
