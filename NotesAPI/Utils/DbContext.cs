@@ -10,8 +10,14 @@ namespace NotesAPI.Utils
         {
             this.configuration = configuration;
         }
-        public SqlConnection Connection { 
-            get =>  new SqlConnection(configuration.GetConnectionString("SqlDbConnection"));
+
+        //public SqlConnection Connection {
+        //    get => new SqlConnection(configuration.GetConnectionString("SqlDbConnection"));
+        //}
+
+        public SqlConnection GetConnection()
+        {
+            return new SqlConnection(configuration.GetConnectionString("SqlDbConnection"));
         }
     }
 }

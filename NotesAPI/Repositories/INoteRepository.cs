@@ -1,15 +1,11 @@
 ﻿using NotesAPI.DTOs;
 using NotesAPI.Entities;
+using NotesAPI.Repositories.Dapper;
 
 namespace NotesAPI.Repositories
 {
-    public interface INoteRepository
+    public interface INoteRepository: IRepository<Note, Guid>, IRepositoryAync<Note, Guid>
     {
-        Task Add(Note request);
-        Task<Note> FindById(Guid id);
-        Task<List<Note>> GetAll();
-        Task Delete(Guid id);
-        Task Edit(Note request);
-        Task<bool> existsById(Guid id);
+        // métodos de noteRepository
     }
 }

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using NotesAPI.DTOs;
 using NotesAPI.Entities;
-using NotesAPI.ENUMs;
+using NotesAPI.EnumsAndStatics;
 using NotesAPI.Repositories;
 
 namespace NotesAPI.Services
@@ -24,7 +24,7 @@ namespace NotesAPI.Services
         {
             Note note = mapper.Map<Note>(request);
             note.Id = Guid.NewGuid();
-            await noteRepository.Add(note);
+            await noteRepository.InsertAsync(note);
             redisRepository.Add(
                 $"{PartialKey.NOTE}{note.Id}",
                 note
@@ -34,7 +34,7 @@ namespace NotesAPI.Services
 
         public async Task Delete(Guid id)
         {
-            await noteRepository.Delete(id);
+            await noteRepository.DeleteAsync(new Note { Id = id });
             redisRepository.Delete($"{PartialKey.NOTE}{id}");
         }
 
@@ -47,7 +47,7 @@ namespace NotesAPI.Services
         {
             Note note = mapper.Map<Note>(request);
             note.Id = id;
-            await noteRepository.Edit(note);
+            await noteRepository.UpdateAsync(note);
             redisRepository.Add($"{PartialKey.NOTE}{id}", note);
         }
 
@@ -55,7 +55,7 @@ namespace NotesAPI.Services
         {
             Note note = redisRepository.FindByKey<Note>($"{PartialKey.NOTE}{id}");
             if (note == null) {
-                note = await noteRepository.FindById(id);
+                note = await noteRepository.GetAsync(new Note { Id = id});
                 redisRepository.Add($"{PartialKey.NOTE}{id}", note);
             } 
             return note;
@@ -65,7 +65,7 @@ namespace NotesAPI.Services
         {
             List<Note> notes = redisRepository.GetAll<Note>($"{PartialKey.NOTE}*");
             if (notes.Count() == 0) {
-                notes = await noteRepository.GetAll();
+                notes = (await noteRepository.GetAllAsync()).ToList();
                 notes.ForEach(i => redisRepository.Add($"{PartialKey.NOTE}{i.Id}", i));
             }
             return notes;
@@ -73,7 +73,7 @@ namespace NotesAPI.Services
 
         public async Task<bool> existsById(Guid id)
         {
-            return await noteRepository.existsById(id);
+            return await noteRepository.existsByIdAsync(ETable.Notes, id);
         }
 
         public bool ExistsKeyInCache(string key)
