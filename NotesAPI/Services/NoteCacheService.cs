@@ -2,88 +2,67 @@
 using NotesAPI.DTOs;
 using NotesAPI.Entities;
 using NotesAPI.EnumsAndStatics;
-using NotesAPI.Repositories;
+using NotesAPI.Repositories.Interfaces;
+using NotesAPI.Services.Interfaces;
 
 namespace NotesAPI.Services
 {
-    public class NoteCacheService: INoteCacheService
+    public class NoteCacheService: NoteService, INoteCacheService
     {
-        private readonly INoteRepository noteRepository;
+        //private readonly INoteRepository noteRepository;
         private readonly IMapper mapper;
         private readonly IRedisRepository redisRepository;
 
-        public NoteCacheService(INoteRepository noteRepository, IRedisRepository redisRepository, IMapper mapper)
+        public NoteCacheService(INoteRepository noteRepository, IRedisRepository redisRepository, IMapper mapper): base(noteRepository, mapper)
         {
-            this.noteRepository = noteRepository;
+            //this.noteRepository = noteRepository;
             this.mapper = mapper;
             this.redisRepository = redisRepository;
             Console.WriteLine("Ejecutar NoteCacheService....");
         }
 
-        public async Task<Note> Add(NoteRequest request)
+        public override async Task<Note> Add(NoteRequest request)
         {
-            Note note = mapper.Map<Note>(request);
-            note.Id = Guid.NewGuid();
-            await noteRepository.InsertAsync(note);
-            redisRepository.Add(
+            Note note = await base.Add(request);
+            await redisRepository.Set(
                 $"{PartialKey.NOTE}{note.Id}",
                 note
             );
             return note;
         }
 
-        public async Task Delete(Guid id)
+        public override async Task Delete(Guid id)
         {
-            await noteRepository.DeleteAsync(new Note { Id = id });
-            redisRepository.Delete($"{PartialKey.NOTE}{id}");
+            await base.Delete(id);
+            await redisRepository.Delete($"{PartialKey.NOTE}{id}");
         }
 
-        public void ClearCache()
+        public override async Task Edit(Guid id, NoteRequest request)
         {
-            redisRepository.DeleteAll();
-        }
-
-        public async Task Edit(Guid id, NoteRequest request)
-        {
+            await base.Edit(id, request);
             Note note = mapper.Map<Note>(request);
             note.Id = id;
-            await noteRepository.UpdateAsync(note);
-            redisRepository.Add($"{PartialKey.NOTE}{id}", note);
+            await redisRepository.Set($"{PartialKey.NOTE}{id}", note);
         }
 
-        public async Task<Note> FindById(Guid id)
+        public override async Task<Note> FindById(Guid id)
         {
-            Note note = redisRepository.FindByKey<Note>($"{PartialKey.NOTE}{id}");
+            Note note = await redisRepository.FindByKey<Note>($"{PartialKey.NOTE}{id}");
             if (note == null) {
                 note = await noteRepository.GetAsync(new Note { Id = id});
-                redisRepository.Add($"{PartialKey.NOTE}{id}", note);
+                await redisRepository.Set($"{PartialKey.NOTE}{id}", note);
             } 
             return note;
         }
 
-        public async Task<List<Note>> GetAll()
+        public override async Task<List<Note>> GetAll()
         {
-            List<Note> notes = redisRepository.GetAll<Note>($"{PartialKey.NOTE}*");
+            List<Note> notes = await redisRepository.GetAll<Note>($"{PartialKey.NOTE}*");
             if (notes.Count() == 0) {
                 notes = (await noteRepository.GetAllAsync()).ToList();
-                notes.ForEach(i => redisRepository.Add($"{PartialKey.NOTE}{i.Id}", i));
+                notes.ForEach(i => redisRepository.Set($"{PartialKey.NOTE}{i.Id}", i));
             }
             return notes;
-        }
-
-        public async Task<bool> existsById(Guid id)
-        {
-            return await noteRepository.existsByIdAsync(ETable.Notes, id);
-        }
-
-        public bool ExistsKeyInCache(string key)
-        {
-            return redisRepository.ExistsKey(key);
-        }
-
-        public List<string> GetKeys(string partialKey)
-        {
-            return redisRepository.GetKeys(partialKey);
         }
     }
 }

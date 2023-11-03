@@ -1,5 +1,7 @@
 using NotesAPI.Repositories;
+using NotesAPI.Repositories.Interfaces;
 using NotesAPI.Services;
+using NotesAPI.Services.Interfaces;
 using NotesAPI.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,9 +19,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 // My Services
-builder.Services.AddTransient<DbContext>();
+builder.Services.AddScoped<DbContext>();
+builder.Services.AddTransient<ICacheAdmin, CacheAdmin>();
+
 builder.Services.AddTransient<IRedisRepository, RedisRepository>();
 builder.Services.AddTransient<INoteCacheService, NoteCacheService>();
+builder.Services.AddTransient<INoteCacheListService, NoteCacheListService>();
 builder.Services.AddTransient<INoteRepository, NoteRepository>();
 builder.Services.AddTransient<INoteService, NoteService>();
 

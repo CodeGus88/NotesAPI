@@ -1,6 +1,6 @@
 ﻿using NotesAPI.EnumsAndStatics;
 
-namespace NotesAPI.Repositories.Dapper
+namespace NotesAPI.Repositories.Interfaces
 {
     public interface IRepositoryAync<TEntity, TId>
     {
@@ -10,5 +10,6 @@ namespace NotesAPI.Repositories.Dapper
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
         Task<bool> existsByIdAsync(ETable table, TId id);
+        Task DeleteByIdsAsync(ETable table, List<TId> ids);
     }
 }

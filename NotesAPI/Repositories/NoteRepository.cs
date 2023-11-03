@@ -1,6 +1,6 @@
 ﻿
 using NotesAPI.Entities;
-using NotesAPI.Repositories.Dapper;
+using NotesAPI.Repositories.Interfaces;
 using NotesAPI.Utils;
 
 namespace NotesAPI.Repositories

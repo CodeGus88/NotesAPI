@@ -2,7 +2,8 @@
 using NotesAPI.DTOs;
 using NotesAPI.Entities;
 using NotesAPI.EnumsAndStatics;
-using NotesAPI.Repositories;
+using NotesAPI.Repositories.Interfaces;
+using NotesAPI.Services.Interfaces;
 
 namespace NotesAPI.Services
 {
@@ -17,7 +18,7 @@ namespace NotesAPI.Services
             this.mapper = mapper;
             Console.WriteLine("Ejecutar NoteService....");
         }
-        public async Task<Note> Add(NoteRequest request)
+        public virtual async Task<Note> Add(NoteRequest request)
         {
             Note note = mapper.Map<Note>(request);
             note.Id = Guid.NewGuid();
@@ -25,29 +26,29 @@ namespace NotesAPI.Services
             return note;
         }
 
-        public async Task Delete(Guid id)
+        public virtual async Task Delete(Guid id)
         {
             await noteRepository.DeleteAsync(new Note { Id = id});
         }
 
-        public async Task Edit(Guid id, NoteRequest request)
+        public virtual async Task Edit(Guid id, NoteRequest request)
         {
             Note note = mapper.Map<Note>(request);
             note.Id = id;
             await noteRepository.UpdateAsync(note);
         }
 
-        public async Task<Note> FindById(Guid id)
+        public virtual async Task<Note> FindById(Guid id)
         {
             return await noteRepository.GetAsync(new Note { Id = id});
         }
 
-        public async Task<List<Note>> GetAll()
+        public virtual async Task<List<Note>> GetAll()
         {
             return (await noteRepository.GetAllAsync()).ToList();
         }
 
-        public async Task<bool> existsById(Guid id) {
+        public virtual async Task<bool> ExistsById(Guid id) {
             return await noteRepository.existsByIdAsync(ETable.Notes, id);
         }
     }

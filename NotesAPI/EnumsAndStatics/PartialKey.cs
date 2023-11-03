@@ -1,9 +1,8 @@
-﻿
-namespace NotesAPI.EnumsAndStatics
+﻿namespace NotesAPI.EnumsAndStatics
 {
-    public static class PartialKey {
-        public static readonly string NOTE = "@NOTE:";
-        public static readonly string NOTES = "@NOTES:";
+    public class PartialKey {
+        public static string NOTE { get; } = "@NOTE:";
+        public static string NOTES { get; } = "@NOTES";
     }
 
 }

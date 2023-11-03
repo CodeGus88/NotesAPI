@@ -1,7 +1,7 @@
 ﻿using NotesAPI.DTOs;
 using NotesAPI.Entities;
 
-namespace NotesAPI.Services
+namespace NotesAPI.Services.Interfaces
 {
     public interface INoteService
     {
@@ -10,6 +10,6 @@ namespace NotesAPI.Services
         Task<List<Note>> GetAll();
         Task Delete(Guid id);
         Task Edit(Guid id, NoteRequest request);
-        Task<bool> existsById(Guid id);
+        Task<bool> ExistsById(Guid id);
     }
 }

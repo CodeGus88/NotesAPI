@@ -2,7 +2,7 @@
 using NotesAPI.DTOs;
 using NotesAPI.Entities;
 using NotesAPI.EnumsAndStatics;
-using NotesAPI.Services;
+using NotesAPI.Services.Interfaces;
 
 namespace NotesAPI.Controllers
 {
@@ -12,12 +12,18 @@ namespace NotesAPI.Controllers
     {
         private readonly INoteService noteService;
         private readonly INoteCacheService noteCacheService;
+        private readonly INoteCacheListService noteCacheListService;
         private INoteService optionService;
 
-        public NotesController(INoteService noteService, INoteCacheService noteCacheService)
+        public NotesController(
+            INoteService noteService, 
+            INoteCacheService noteCacheService,
+            INoteCacheListService noteCacheListService
+        )
         {
             this.noteService = noteService;
             this.noteCacheService = noteCacheService;
+            this.noteCacheListService = noteCacheListService;
         }
 
         [HttpGet]
@@ -31,7 +37,7 @@ namespace NotesAPI.Controllers
         public async Task<ActionResult<Note>> Get(Guid id, [FromQuery] ECache cacheOption = ECache.WITH_ITEM_CACHE)
         {
             ConfigService(cacheOption);
-            bool exists = await noteService.existsById(id);
+            bool exists = await noteService.ExistsById(id);
             if (!exists) return NotFound();
             return await optionService.FindById(id);
         }
@@ -48,7 +54,7 @@ namespace NotesAPI.Controllers
         public async Task<ActionResult> Put(Guid id, NoteRequest request, [FromQuery] ECache cacheOption = ECache.WITH_ITEM_CACHE)
         {
             ConfigService(cacheOption);
-            bool exists = await noteCacheService.existsById(id);
+            bool exists = await noteCacheService.ExistsById(id);
             if (!exists) return NotFound();
             await optionService.Edit(id, request);
             return NoContent();
@@ -58,7 +64,7 @@ namespace NotesAPI.Controllers
         public async Task<ActionResult> Delete(Guid id, [FromQuery] ECache cacheOption = ECache.WITH_ITEM_CACHE)
         {
             ConfigService(cacheOption);
-            bool exists = await noteCacheService.existsById(id);
+            bool exists = await noteCacheService.ExistsById(id);
             if (!exists) return NotFound();
             await optionService.Delete(id);
             return NoContent();
@@ -74,7 +80,8 @@ namespace NotesAPI.Controllers
                     optionService = noteCacheService;
                     break;
                 case ECache.WITH_LIST_CACHE:
-                    throw new Exception("not implemented");
+                    optionService = noteCacheListService; 
+                    break;
 
             }
         }

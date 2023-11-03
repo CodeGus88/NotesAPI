@@ -1,6 +1,6 @@
 ﻿using NotesAPI.EnumsAndStatics;
 
-namespace NotesAPI.Repositories.Dapper
+namespace NotesAPI.Repositories.Interfaces
 {
     public interface IRepository<TEntity, TId>
     {
@@ -10,5 +10,6 @@ namespace NotesAPI.Repositories.Dapper
         void Update(TEntity entity);
         void Delete(TEntity entity);
         bool existsById(ETable table, TId id);
+        void DeleteByIds(ETable table, List<TId> ids);
     }
 }

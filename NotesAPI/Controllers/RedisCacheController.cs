@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NotesAPI.Services;
+using NotesAPI.Services.Interfaces;
 
 namespace NotesAPI.Controllers
 {
@@ -7,21 +7,21 @@ namespace NotesAPI.Controllers
     [Route("api/redis")]
     public class RedisCacheController: ControllerBase
     {
-        private readonly INoteCacheService redisService;
+        private readonly ICacheAdmin cacheAdmin;
 
-        public RedisCacheController(INoteCacheService redisService)
+        public RedisCacheController(ICacheAdmin cacheAdmin)
         {
-            this.redisService = redisService;
+            this.cacheAdmin = cacheAdmin;
         }
 
         [HttpGet("{partialKey}")]
         public ActionResult<List<string>> GetKeys(string partialKey = "*") {
-            return redisService.GetKeys(partialKey);
+            return cacheAdmin.GetKeys(partialKey);
         }
 
         [HttpDelete("clear")]
-        public ActionResult ClearCache() {
-            redisService.ClearCache();
+        public async Task<ActionResult> ClearCache() {
+            await cacheAdmin.ClearCache();
             return NoContent();
         }
     }
