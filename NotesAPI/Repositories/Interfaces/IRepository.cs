@@ -9,7 +9,7 @@ namespace NotesAPI.Repositories.Interfaces
         TId? Insert(TEntity entity);
         void Update(TEntity entity);
         void Delete(TEntity entity);
-        bool existsById(ETable table, TId id);
+        bool ExistsById(ETable table, TId id);
         void DeleteByIds(ETable table, List<TId> ids);
     }
 }

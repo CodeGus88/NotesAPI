@@ -2,8 +2,7 @@
 {
     public enum ECache
     {
-        WITHOUT_CACHE = 1,
-        WITH_ITEM_CACHE = 2,
-        WITH_LIST_CACHE = 3
+        WITH_CACHE_ITEM = 1,
+        WITH_CACHE_LIST = 2
     }
 }

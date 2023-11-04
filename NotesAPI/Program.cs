@@ -23,8 +23,6 @@ builder.Services.AddScoped<DbContext>();
 builder.Services.AddTransient<ICacheAdmin, CacheAdmin>();
 
 builder.Services.AddTransient<IRedisRepository, RedisRepository>();
-builder.Services.AddTransient<INoteCacheService, NoteCacheService>();
-builder.Services.AddTransient<INoteCacheListService, NoteCacheListService>();
 builder.Services.AddTransient<INoteRepository, NoteRepository>();
 builder.Services.AddTransient<INoteService, NoteService>();
 

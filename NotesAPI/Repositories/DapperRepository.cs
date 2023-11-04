@@ -63,7 +63,7 @@ namespace NotesAPI.Repositories
             }
         }
 
-        public bool existsById(ETable table, TId id)
+        public bool ExistsById(ETable table, TId id)
         {
             using (var connection = context.GetConnection())
             {
@@ -131,7 +131,7 @@ namespace NotesAPI.Repositories
             }
         }
 
-        public virtual async Task<bool> existsByIdAsync(ETable table, TId id)
+        public virtual async Task<bool> ExistsByIdAsync(ETable table, TId id)
         {
             using (var connection = context.GetConnection())
             {

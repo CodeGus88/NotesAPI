@@ -9,7 +9,7 @@ namespace NotesAPI.Repositories.Interfaces
         Task<TId?> InsertAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(TEntity entity);
-        Task<bool> existsByIdAsync(ETable table, TId id);
+        Task<bool> ExistsByIdAsync(ETable table, TId id);
         Task DeleteByIdsAsync(ETable table, List<TId> ids);
     }
 }
