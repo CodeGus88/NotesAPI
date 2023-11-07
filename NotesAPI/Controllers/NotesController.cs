@@ -18,7 +18,7 @@ namespace NotesAPI.Controllers
         )
         {
             this.noteService = noteService;
-            cacheOption = ECache.WITH_CACHE_LIST;
+            cacheOption = ECache.WITH_CACHE_ITEM;
         }
 
         [HttpGet]

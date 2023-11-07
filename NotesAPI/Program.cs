@@ -26,6 +26,18 @@ builder.Services.AddTransient<IRedisRepository, RedisRepository>();
 builder.Services.AddTransient<INoteRepository, NoteRepository>();
 builder.Services.AddTransient<INoteService, NoteService>();
 
+
+builder.Services.AddCors(options =>
+        options.AddDefaultPolicy(builder => builder.WithOrigins(
+            "http://localhost:3000",
+            "http://localhost:4200",
+            "http://localhost"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+        )
+);
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
@@ -38,6 +50,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 

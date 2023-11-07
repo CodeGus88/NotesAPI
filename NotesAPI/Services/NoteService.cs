@@ -59,12 +59,6 @@ namespace NotesAPI.Services
             else 
             {
                 note = await repository.GetAsync(new Note { Id = id });
-                bool existInCache = await cacheRepository.ExistsKey(GetItemKey(id));
-                if (!existInCache)
-                {
-                    note = await cacheRepository.FindByKey<Note>(GetItemKey(id));
-                    await cacheRepository.Set(GetItemKey(id), note);
-                }
             }
             return note;
         }
@@ -127,10 +121,11 @@ namespace NotesAPI.Services
 
         public async Task<Note> FindById2(Guid id, bool useCache )
         {
-            List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+            
             Note note;
             if (useCache)
             {
+                List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
                 if (notes.Count == 0)
                 {
                     note = notes.FirstOrDefault(item => item.Id == id);
@@ -149,9 +144,6 @@ namespace NotesAPI.Services
             else
             {
                 note = await repository.GetAsync(new Note { Id = id } );
-                if (!notes.Exists(item => item.Id == id))
-                    notes.Add(note);
-                await cacheRepository.Set(PartialKey.NOTES, notes);
             }
             return note;
         }
@@ -189,12 +181,6 @@ namespace NotesAPI.Services
             Note note = mapper.Map<Note>(request);
             note.Id = id;
             await repository.UpdateAsync(note);
-
-            //List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
-            //var index = notes.FindIndex(i => i.Id == id);
-            //if (index >= 0) notes[index] = note;
-            //else notes.Add(note);
-            //await cacheRepository.Set(PartialKey.NOTES, notes);
 
             List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
             if (notes.Exists(i => i.Id == id)) {

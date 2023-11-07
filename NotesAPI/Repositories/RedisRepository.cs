@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-using NotesAPI.EnumsAndStatics;
 using NotesAPI.Repositories.Interfaces;
 using StackExchange.Redis;
 using System.Text;

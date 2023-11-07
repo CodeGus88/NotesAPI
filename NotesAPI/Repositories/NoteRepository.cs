@@ -1,5 +1,4 @@
-﻿
-using NotesAPI.Entities;
+﻿using NotesAPI.Entities;
 using NotesAPI.Repositories.Interfaces;
 using NotesAPI.Utils;
 
