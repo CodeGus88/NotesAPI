@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="EntitiesAuto\**" />
-    <Content Remove="EntitiesAuto\**" />
-    <EmbeddedResource Remove="EntitiesAuto\**" />
-    <None Remove="EntitiesAuto\**" />
+    <None Remove="C:\Users\soyyo\.nuget\packages\dapper.fastcrud.modelgenerator\3.0.44\contentFiles\any\any\Models\SampleModelGeneratorConfig.tt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Models\Application.config" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,4 +34,24 @@
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Models\SampleModelGeneratorConfig.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SampleModelGeneratorConfig.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Models\GenericModelGenerator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenericModelGenerator.cs</LastGenOutput>
+    </None>
+    <None Update="Models\SampleModelGeneratorConfig.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SampleModelGeneratorConfig.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
 </Project>
+

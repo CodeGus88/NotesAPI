@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using NotesAPI.DTOs;
-using NotesAPI.Entities;
 using NotesAPI.EnumsAndStatics;
+using NotesAPI.Models;
 using NotesAPI.Repositories.Interfaces;
 using NotesAPI.Services.Interfaces;
 
@@ -21,9 +21,9 @@ namespace NotesAPI.Services
         }
 
         #region cacheitem
-        public async Task<Note> Add(NoteRequest request)
+        public async Task<NoteEntity> Add(NoteRequest request)
         {
-            Note note = mapper.Map<Note>(request);
+            NoteEntity note = mapper.Map<NoteEntity>(request);
             note.Id = Guid.NewGuid();
             await repository.InsertAsync(note);
             await cacheRepository.Set(GetItemKey(note.Id), note);
@@ -31,41 +31,41 @@ namespace NotesAPI.Services
         }
         public async Task Delete(Guid id)
         {
-            await repository.DeleteAsync(new Note { Id = id});
+            await repository.DeleteAsync(new NoteEntity { Id = id});
             await cacheRepository.Delete(GetItemKey(id));
         }
         public async Task Edit(Guid id, NoteRequest request)
         {
-            Note note = mapper.Map<Note>(request);
+            NoteEntity note = mapper.Map<NoteEntity>(request);
             note.Id = id;
             await repository.UpdateAsync(note);
             await cacheRepository.Set(GetItemKey(note.Id), note);
         }
-        public async Task<Note> FindById(Guid id, bool useCache)
+        public async Task<NoteEntity> FindById(Guid id, bool useCache)
         {
-            Note note;
+            NoteEntity note;
             if (useCache)
             {
                 bool existInCache = await cacheRepository.ExistsKey(GetItemKey(id));
                 if (existInCache)
                 {
-                    note = await cacheRepository.FindByKey<Note>(GetItemKey(id));
+                    note = await cacheRepository.FindByKey<NoteEntity>(GetItemKey(id));
                 }
                 else {
-                    note = await repository.GetAsync(new Note { Id = id });
+                    note = await repository.GetAsync(new NoteEntity { Id = id });
                     await cacheRepository.Set(GetItemKey(id), note);
                 }
             }
             else 
             {
-                note = await repository.GetAsync(new Note { Id = id });
+                note = await repository.GetAsync(new NoteEntity { Id = id });
             }
             return note;
         }
 
-        public async Task<List<Note>> GetAll(bool useCache)
+        public async Task<List<NoteEntity>> GetAll(bool useCache)
         {
-            List<Note> notes = await cacheRepository.GetAll<Note>(PartialKey.NOTE);
+            List<NoteEntity> notes = await cacheRepository.GetAll<NoteEntity>(PartialKey.NOTE);
             if (useCache)
             {
                 if (notes.Count() == 0)
@@ -106,54 +106,54 @@ namespace NotesAPI.Services
 
 
         #region cachelist
-        public async Task<Note> Add2(NoteRequest request)
+        public async Task<NoteEntity> Add2(NoteRequest request)
         {
-            Note note = mapper.Map<Note>(request);
+            NoteEntity note = mapper.Map<NoteEntity>(request);
             note.Id = Guid.NewGuid();
             await repository.InsertAsync(note);
 
-            List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+            List<NoteEntity> notes = (await cacheRepository.FindByKey<List<NoteEntity>>(PartialKey.NOTES)) ?? new List<NoteEntity>();
             notes.Add(note);
             await cacheRepository.Set(PartialKey.NOTES, notes);
 
             return note;
         }
 
-        public async Task<Note> FindById2(Guid id, bool useCache )
+        public async Task<NoteEntity> FindById2(Guid id, bool useCache )
         {
             
-            Note note;
+            NoteEntity note;
             if (useCache)
             {
-                List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+                List<NoteEntity> notes = (await cacheRepository.FindByKey<List<NoteEntity>>(PartialKey.NOTES)) ?? new List<NoteEntity>();
                 if (notes.Count == 0)
                 {
                     note = notes.FirstOrDefault(item => item.Id == id);
                     if (note == null) {
-                        note = await repository.GetAsync(new Note { Id = id });
+                        note = await repository.GetAsync(new NoteEntity { Id = id });
                         notes.Add(note);
                         await cacheRepository.Set(PartialKey.NOTES, notes);
                     }
                 }
                 else
                 {
-                    note = await repository.GetAsync(new Note { Id = id});
-                    await cacheRepository.Set(PartialKey.NOTES, new List<Note> { note });
+                    note = await repository.GetAsync(new NoteEntity { Id = id});
+                    await cacheRepository.Set(PartialKey.NOTES, new List<NoteEntity> { note });
                 }
             }
             else
             {
-                note = await repository.GetAsync(new Note { Id = id } );
+                note = await repository.GetAsync(new NoteEntity { Id = id } );
             }
             return note;
         }
 
-        public async Task<List<Note>> GetAll2(bool useCache)
+        public async Task<List<NoteEntity>> GetAll2(bool useCache)
         {
-            List<Note> notes;
+            List<NoteEntity> notes;
             if (useCache)
             {
-                notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+                notes = (await cacheRepository.FindByKey<List<NoteEntity>>(PartialKey.NOTES)) ?? new List<NoteEntity>();
                 if (notes.Count == 0) {
                     notes = (await repository.GetAllAsync()).ToList();
                     if (notes.Count > 0) 
@@ -169,20 +169,20 @@ namespace NotesAPI.Services
 
         public async Task Delete2(Guid id)
         {
-            await repository.DeleteAsync(new Note { Id = id });
+            await repository.DeleteAsync(new NoteEntity { Id = id });
 
-            List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+            List<NoteEntity> notes = (await cacheRepository.FindByKey<List<NoteEntity>>(PartialKey.NOTES)) ?? new List<NoteEntity>();
             notes.RemoveAll(note => note.Id == id);
             await cacheRepository.Set(PartialKey.NOTES, notes);
         }
 
         public async Task Edit2(Guid id, NoteRequest request)
         {
-            Note note = mapper.Map<Note>(request);
+            NoteEntity note = mapper.Map<NoteEntity>(request);
             note.Id = id;
             await repository.UpdateAsync(note);
 
-            List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+            List<NoteEntity> notes = (await cacheRepository.FindByKey<List<NoteEntity>>(PartialKey.NOTES)) ?? new List<NoteEntity>();
             if (notes.Exists(i => i.Id == id)) {
                 var prepareNote = notes.Find(i => i.Id == id);
                 prepareNote.Title = note.Title;
@@ -197,7 +197,7 @@ namespace NotesAPI.Services
         {
             if (useCache)
             {
-                List<Note> notes = (await cacheRepository.FindByKey<List<Note>>(PartialKey.NOTES)) ?? new List<Note>();
+                List<NoteEntity> notes = (await cacheRepository.FindByKey<List<NoteEntity>>(PartialKey.NOTES)) ?? new List<NoteEntity>();
                 bool exists = notes.Exists(i => i.Id == id);
                 if (!exists) return  await repository.ExistsByIdAsync(ETable.Notes, id);
                 return exists;

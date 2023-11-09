@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NotesAPI.DTOs;
-using NotesAPI.Entities;
 using NotesAPI.EnumsAndStatics;
+using NotesAPI.Models;
 using NotesAPI.Services.Interfaces;
 
 namespace NotesAPI.Controllers
@@ -22,7 +22,7 @@ namespace NotesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Note>>> Get([FromQuery] bool useCache = true)
+        public async Task<ActionResult<List<NoteEntity>>> Get([FromQuery] bool useCache = true)
         {
             switch (cacheOption)
             {
@@ -36,7 +36,7 @@ namespace NotesAPI.Controllers
         }
 
         [HttpGet("{id}", Name = "findByIdNote")]
-        public async Task<ActionResult<Note>> Get(
+        public async Task<ActionResult<NoteEntity>> Get(
             Guid id,
             [FromQuery] bool useCache = true)
         {
@@ -58,7 +58,7 @@ namespace NotesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Note>> Post(NoteRequest request)
+        public async Task<ActionResult<NoteEntity>> Post(NoteRequest request)
         {
             switch (cacheOption)
             {

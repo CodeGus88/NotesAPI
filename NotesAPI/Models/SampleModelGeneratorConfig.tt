@@ -15,17 +15,17 @@ You can right click on your configuration file and click on "Debug T4 Template" 
 	//  <connectionStrings>
 	//   <add name="EntityGeneration" 
 	//	        providerName="System.Data.SqlClient" 
-	//	    SqlDbConnection="Data Source=(localDb)\\MSSQLLocalDB;Initial Catalog=NotesDB;Integrated Security=True"/>
+	//	    connectionString="Data Source=(localDb)\MSSQLLocalDB;Initial Catalog=NotesDB;Integrated Security=True"/>
 	// </connectionStrings>
 	// </configuration>
-	ConfigPath = @"";
+	ConfigPath = @"Application.config";
 
 	// By default, the template will use the last connection string in the configuration file. 
 	// You can specify an alternate connection string to be used instead.
-	ConnectionStringName = "Data Source=(localDb)\\MSSQLLocalDB;Initial Catalog=NotesDB;Integrated Security=True"; 
+	ConnectionStringName = "EntityGeneration";
 
 	// The namespace for your generated entities.
-	Namespace = "NotesAPI.EntitiesAuto";
+	Namespace = "NotesAPI.Models";
 
 	// An optional prefix to be used for the class names.
 	ClassPrefix = "";
@@ -48,6 +48,8 @@ You can right click on your configuration file and click on "Debug T4 Template" 
 
 	// Table or schema qualified table and view names can be excluded via this property.
 	ExcludeTablePrefixes = new string[]{"ELMAH", "AspNet_", "HangFire."};
+
+
 #>
 <#@ include file="$(DapperFastCrudModelGeneratorPath)GenericModelGenerator.tt" #>
 <#+

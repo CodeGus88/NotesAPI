@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using NotesAPI.DTOs;
-using NotesAPI.Entities;
+using NotesAPI.Models;
 
 namespace NotesAPI.Utils
 {
@@ -8,7 +8,7 @@ namespace NotesAPI.Utils
     {
         public AutoMapperProfile()
         {
-            CreateMap<NoteRequest, Note>();
+            CreateMap<NoteRequest, NoteEntity>();
         }
     }
 }

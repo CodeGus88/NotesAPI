@@ -1,7 +1,8 @@
 ﻿using Dapper;
 using Dapper.FastCrud;
-using NotesAPI.Entities;
+//using NotesAPI.Entities;
 using NotesAPI.EnumsAndStatics;
+using NotesAPI.Models;
 using NotesAPI.Repositories.Interfaces;
 using NotesAPI.Utils;
 
