@@ -29,7 +29,7 @@ builder.Services.AddTransient<INoteService, NoteService>();
 
 builder.Services.AddCors(options =>
         options.AddDefaultPolicy(builder => builder.WithOrigins(
-            "http://localhost:3000",
+            "http://localhost:89",
             "http://localhost:4200",
             "http://localhost"
             )
@@ -43,11 +43,11 @@ builder.Services.AddAutoMapper(typeof(Program));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 
